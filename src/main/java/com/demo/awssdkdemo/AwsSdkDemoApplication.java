@@ -29,13 +29,20 @@ public class AwsSdkDemoApplication implements CommandLineRunner {
 //        awsDatazoneService.listProjects();
 //        log.info("{}", awsDatazoneService.getProjectId(PROJECT_NAME));
 //        log.info("AssetType exists: {}", awsDatazoneService.assetTypeExists("JsonAssetType"));
+//        createOutputAsset();
 //        createDepartmentAsset();
 //        updateDepartmentAsset();
 //        awsDatazoneService.getAsset("c0vdcl6vwvjr4y");//"Department1");
-        awsDatazoneService.getLineageEvent("3jsqbte83xrjqa");
+//        awsDatazoneService.getLineageEvent("3jsqbte83xrjqa");
 //        awsDatazoneService.postLineageEvent("c0vdcl6vwvjr4y", // Department1
 //                "563t51p703os9u" // Output1
 //        );
+//        awsDatazoneService.postLineageEvent("bb6qulorb02wiq", // TestDepartmentAsset // lineage event posted (djzr34qvxz919e)
+//                "brpdvjvvg59dlu", // TestReportingFieldsOutputAsset,
+//                "TestDepartmentAsset",
+//                "TestReportingFieldsOutputAsset"
+//        );
+        awsDatazoneService.listLineageEvents();
         System.exit(0);
     }
 
@@ -47,12 +54,21 @@ public class AwsSdkDemoApplication implements CommandLineRunner {
                         .build()));
     }
 
-    private void createDepartmentAsset() {
+    private void createDepartmentAsset() { // bb6qulorb02wiq
         awsDatazoneService.createAsset("TestDepartmentAsset", "JsonAssetType", PROJECT_NAME,
                 Collections.emptyList(), //List.of("DepartmentGlossary"),
                 List.of(FormInput.builder()
                         .formName("DepartmentMetadataForm")
                         .typeIdentifier("DepartmentMetaDataForm")
+                        .build()));
+    }
+
+    private void createOutputAsset() {  // brpdvjvvg59dlu
+        awsDatazoneService.createAsset("TestReportingFieldsOutputAsset", "CdmAssetType", PROJECT_NAME,
+                Collections.emptyList(), //List.of("DepartmentGlossary"),
+                List.of(FormInput.builder()
+                        .formName("ReportingFieldsMetaDataForm")
+                        .typeIdentifier("ReportingFieldsMetaDataForm")
                         .build()));
     }
 }
