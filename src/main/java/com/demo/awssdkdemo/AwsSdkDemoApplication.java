@@ -34,19 +34,19 @@ public class AwsSdkDemoApplication implements CommandLineRunner {
 //        updateDepartmentAsset();
 //        awsDatazoneService.getAsset("c0vdcl6vwvjr4y");//"Department1");
 //        awsDatazoneService.getLineageEvent("3jsqbte83xrjqa");
+        //        awsDatazoneService.postLineageEvent("bb6qulorb02wiq", // TestDepartmentAsset // lineage event posted (djzr34qvxz919e)
+//                "brpdvjvvg59dlu", // TestReportingFieldsOutputAsset,
+//                "TestDepartmentAsset",
+//                "TestReportingFieldsOutputAsset"
+//        );
 //        awsDatazoneService.postLineageEvent("c0vdcl6vwvjr4y", // Department1
 //                "563t51p703os9u", // Output1,
 //            "Department1",
 //            "Output1"
 //        );
-//        awsDatazoneService.postLineageEvent("bb6qulorb02wiq", // TestDepartmentAsset // lineage event posted (djzr34qvxz919e)
-//                "brpdvjvvg59dlu", // TestReportingFieldsOutputAsset,
-//                "TestDepartmentAsset",
-//                "TestReportingFieldsOutputAsset"
-//        );
 //        awsDatazoneService.listLineageEvents();
 //        awsDatazoneService.getLineageEvent("4xt41fnuog706a"); // Success (department1 to Output1)
-        awsDatazoneService.getLineageEvent("cmldhyi9tdnxr6");
+        awsDatazoneService.getLineageEvent("5iut4egwugzh5u");
         System.exit(0);
     }
 

@@ -118,7 +118,8 @@ public class AwsDatazoneService {
   public void postLineageEvent(
       String sourceAssetId, String targetAssetId, String sourceDatasetName, String targetDataSetName) throws JsonProcessingException {
     log.info("Posting lineage event: {} -> {}", sourceAssetId, targetAssetId);
-    OpenLineage ol = new OpenLineage(URI.create(""));
+    String namespace = "arn:aws:glue:" + awsSdkConfigParams.getRegion() + ":376060057983";
+    OpenLineage ol = new OpenLineage(URI.create(namespace));
     // Input
     OpenLineage.InputDataset inputDataSet1 = ol.newInputDataset(awsSdkConfigParams.getDomainIdentifier(),
 //        sourceAssetId,
