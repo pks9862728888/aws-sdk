@@ -44,7 +44,9 @@ public class AwsSdkDemoApplication implements CommandLineRunner {
 //                "TestDepartmentAsset",
 //                "TestReportingFieldsOutputAsset"
 //        );
-        awsDatazoneService.listLineageEvents();
+//        awsDatazoneService.listLineageEvents();
+//        awsDatazoneService.getLineageEvent("4xt41fnuog706a"); // Success (department1 to Output1)
+        awsDatazoneService.getLineageEvent("cmldhyi9tdnxr6");
         System.exit(0);
     }
 
