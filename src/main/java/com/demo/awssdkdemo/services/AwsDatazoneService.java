@@ -121,10 +121,15 @@ public class AwsDatazoneService {
     String namespace = "arn:aws:glue:" + awsSdkConfigParams.getRegion() + ":376060057983";
     OpenLineage ol = new OpenLineage(URI.create(namespace));
     // Input
+    String inputDataSetArn = "arn:aws:glue:ap-southeast-2:376060057983:table/dg_demo_db3/dg_department1";
     OpenLineage.InputDataset inputDataSet1 = ol.newInputDataset(awsSdkConfigParams.getDomainIdentifier(),
 //        sourceAssetId,
-        "arn:aws:glue:ap-southeast-2:376060057983:table/dg_demo_db3/dg_department1",
+        inputDataSetArn,
         ol.newDatasetFacetsBuilder()
+            .dataSource(ol.newDatasourceDatasetFacetBuilder()
+                .name(sourceAssetId)
+                .uri(URI.create(inputDataSetArn))
+                .build())
             .schema(ol.newSchemaDatasetFacetBuilder()
                 .fields(List.of(
                     ol.newSchemaDatasetFacetFields("departmentid", "bigint", "id desc", Collections.emptyList()),
@@ -139,9 +144,10 @@ public class AwsDatazoneService {
     );
 
     // Output
+    String outputDataSetArn = "arn:aws:glue:ap-southeast-2:376060057983:table/dg_demo_db3/dg_output1";
     OpenLineage.OutputDataset outputDataSet = ol.newOutputDataset(awsSdkConfigParams.getDomainIdentifier(),
 //        targetAssetId,
-        "arn:aws:glue:ap-southeast-2:376060057983:table/dg_demo_db3/dg_output1",
+        outputDataSetArn,
         ol.newDatasetFacetsBuilder()
             .schema(ol.newSchemaDatasetFacetBuilder()
                 .fields(List.of(
@@ -156,6 +162,13 @@ public class AwsDatazoneService {
                     ol.newSchemaDatasetFacetFields("employees", "int", "employees desc", Collections.emptyList()),
                     ol.newSchemaDatasetFacetFields("partition_id", "string", "partition_id desc", Collections.emptyList())
                 ))
+                .build())
+            .datasetType(ol.newDatasetTypeDatasetFacetBuilder()
+                .datasetType("TABLE")
+                .build())
+            .dataSource(ol.newDatasourceDatasetFacetBuilder()
+                .name(targetAssetId)
+                .uri(URI.create(outputDataSetArn))
                 .build())
             .columnLineage(ol.newColumnLineageDatasetFacetBuilder()
                 .fields(ol.newColumnLineageDatasetFacetFieldsBuilder()
@@ -215,7 +228,10 @@ public class AwsDatazoneService {
                 .build())
             .build(),
         ol.newOutputDatasetOutputFacetsBuilder()
-            .put("nameAlias", new OpenLineage.DefaultOutputDatasetFacet(URI.create("")))
+            .outputStatistics(ol.newOutputStatisticsOutputDatasetFacetBuilder()
+                .rowCount(1L)
+                .fileCount(1L)
+                .build())
             .build());
 
     // Create open lineage run event
