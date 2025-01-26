@@ -120,11 +120,24 @@ public class AwsDatazoneService {
     OpenLineage ol = new OpenLineage(URI.create(""));
     OpenLineage.RunEvent openLineageRunEvent = ol.newRunEventBuilder()
         .job(ol.newJobBuilder()
-            .name("DatazoneLineageJob")
+            .name("DatazoneLineageJob" + UUID.randomUUID())
             .namespace(awsSdkConfigParams.getDomainIdentifier())
+            .facets(ol.newJobFacetsBuilder()
+                .jobType(ol.newJobTypeJobFacetBuilder()
+                    .jobType("JOB")
+                    .processingType("STREAMING")
+                    .integration("SPARK")
+                    .build())
+                .build())
             .build())
         .run(ol.newRunBuilder()
             .runId(UUID.randomUUID())
+            .facets(ol.newRunFacetsBuilder()
+                .nominalTime(ol.newNominalTimeRunFacetBuilder()
+                    .nominalStartTime(ZonedDateTime.now().minusHours(1))
+                    .nominalEndTime(ZonedDateTime.now())
+                    .build())
+                .build())
             .build())
         .eventType(OpenLineage.RunEvent.EventType.COMPLETE)
         .eventTime(ZonedDateTime.now())
@@ -133,22 +146,23 @@ public class AwsDatazoneService {
                     ol.newDatasetFacetsBuilder()
                         .schema(ol.newSchemaDatasetFacetBuilder()
                             .fields(List.of(
-                                ol.newSchemaDatasetFacetFields("id", "string", "id desc", Collections.emptyList()),
-                                ol.newSchemaDatasetFacetFields("name", "string", "name desc", Collections.emptyList())
+                                ol.newSchemaDatasetFacetFields("departmentid", "bigint", "id desc", Collections.emptyList()),
+                                ol.newSchemaDatasetFacetFields("name", "string", "name desc", Collections.emptyList()),
+                                ol.newSchemaDatasetFacetFields("manager", "string", "manager desc", Collections.emptyList()),
+                                ol.newSchemaDatasetFacetFields("employees", "int", "employees desc", Collections.emptyList()),
+                                ol.newSchemaDatasetFacetFields("partition_id", "string", "partition_id desc", Collections.emptyList())
                             ))
                             .build())
-                        .columnLineage(ol.newColumnLineageDatasetFacetBuilder()
-                            .fields(ol.newColumnLineageDatasetFacetFieldsBuilder()
-                                .put("id", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
-                                    .transformationType("DSL")
-                                    .transformationDescription("Direct mapping")
-                                    .build())
-                                .build())
-                            .build())
+//                        .columnLineage(ol.newColumnLineageDatasetFacetBuilder()
+//                            .fields(ol.newColumnLineageDatasetFacetFieldsBuilder()
+//                                .put("departmentid", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
+//                                    .transformationType("IDENTITY")
+//                                    .transformationDescription("Direct mapping")
+//                                    .build())
+//                                .build())
+//                            .build())
                         .build(),
-                    ol.newInputDatasetInputFacetsBuilder()
-                        .put("id", new OpenLineage.DefaultInputDatasetFacet(URI.create("")))
-                        .build()
+                    null
                 )
             )
         )
@@ -157,24 +171,70 @@ public class AwsDatazoneService {
             ol.newDatasetFacetsBuilder()
                 .schema(ol.newSchemaDatasetFacetBuilder()
                     .fields(List.of(
-                        ol.newSchemaDatasetFacetFields("id", "string", "id desc", Collections.emptyList()),
-                        ol.newSchemaDatasetFacetFields("nameAlias", "string", "name desc", Collections.emptyList()),
-                        ol.newSchemaDatasetFacetFields("someOtherField", "string", "someOtherField desc", Collections.emptyList())
+                        ol.newSchemaDatasetFacetFields("userid", "bigint", "id desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("firstname", "string", "firstname desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("lastname", "string", "lastname desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("email", "string", "email desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("age", "int", "age desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("departmentid", "bigint", "departmentid desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("name", "string", "name desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("manager", "string", "manager desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("employees", "int", "employees desc", Collections.emptyList()),
+                        ol.newSchemaDatasetFacetFields("partition_id", "string", "partition_id desc", Collections.emptyList())
                     ))
                     .build())
                 .columnLineage(ol.newColumnLineageDatasetFacetBuilder()
                     .fields(ol.newColumnLineageDatasetFacetFieldsBuilder()
-                        .put("id", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
-                            .transformationType("DSL")
+                        .put("departmentid", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
+                            .transformationType("IDENTITY")
                             .transformationDescription("Direct mapping")
                             .inputFields(List.of(ol.newInputField(
                                 awsSdkConfigParams.getDomainIdentifier(),
                                 sourceDatasetName,
-                                "id",
+                                "departmentid",
                                 List.of(ol.newInputFieldTransformationsBuilder()
                                     .masking(false)
                                     .description("Direct mapping")
-                                    .type("string")
+                                    .type("DIRECT")
+                                    .build()))))
+                            .build())
+                        .put("name", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
+                            .transformationType("IDENTITY")
+                            .transformationDescription("Direct mapping")
+                            .inputFields(List.of(ol.newInputField(
+                                awsSdkConfigParams.getDomainIdentifier(),
+                                sourceDatasetName,
+                                "name",
+                                List.of(ol.newInputFieldTransformationsBuilder()
+                                    .masking(false)
+                                    .description("Direct mapping")
+                                    .type("DIRECT")
+                                    .build()))))
+                            .build())
+                        .put("manager", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
+                            .transformationType("IDENTITY")
+                            .transformationDescription("Direct mapping")
+                            .inputFields(List.of(ol.newInputField(
+                                awsSdkConfigParams.getDomainIdentifier(),
+                                sourceDatasetName,
+                                "manager",
+                                List.of(ol.newInputFieldTransformationsBuilder()
+                                    .masking(false)
+                                    .description("Direct mapping")
+                                    .type("DIRECT")
+                                    .build()))))
+                            .build())
+                        .put("employees", ol.newColumnLineageDatasetFacetFieldsAdditionalBuilder()
+                            .transformationType("IDENTITY")
+                            .transformationDescription("Direct mapping")
+                            .inputFields(List.of(ol.newInputField(
+                                awsSdkConfigParams.getDomainIdentifier(),
+                                sourceDatasetName,
+                                "employees",
+                                List.of(ol.newInputFieldTransformationsBuilder()
+                                    .masking(false)
+                                    .description("Direct mapping")
+                                    .type("DIRECT")
                                     .build()))))
                             .build())
                         .build())

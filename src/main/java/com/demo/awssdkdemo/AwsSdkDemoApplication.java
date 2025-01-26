@@ -35,7 +35,9 @@ public class AwsSdkDemoApplication implements CommandLineRunner {
 //        awsDatazoneService.getAsset("c0vdcl6vwvjr4y");//"Department1");
 //        awsDatazoneService.getLineageEvent("3jsqbte83xrjqa");
 //        awsDatazoneService.postLineageEvent("c0vdcl6vwvjr4y", // Department1
-//                "563t51p703os9u" // Output1
+//                "563t51p703os9u", // Output1,
+//            "Department1",
+//            "Output1"
 //        );
 //        awsDatazoneService.postLineageEvent("bb6qulorb02wiq", // TestDepartmentAsset // lineage event posted (djzr34qvxz919e)
 //                "brpdvjvvg59dlu", // TestReportingFieldsOutputAsset,
