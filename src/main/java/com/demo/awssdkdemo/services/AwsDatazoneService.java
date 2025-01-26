@@ -329,4 +329,89 @@ public class AwsDatazoneService {
         .build());
     log.info("ListLineageEvents response: {}", listLineageEvents);
   }
+
+  public void postLineageEventJsonStr() {
+    String lineageEvent = getPostLineageEventPayload();
+    log.info("LineageEvent: {}", lineageEvent);
+
+    // Post lineage event
+    PostLineageEventRequest postLineageEventRequest = PostLineageEventRequest.builder()
+        .domainIdentifier(awsSdkConfigParams.getDomainIdentifier())
+        .clientToken(UUID.randomUUID().toString())
+        .event(SdkBytes.fromUtf8String(lineageEvent))
+        .build();
+    PostLineageEventResponse postLineageEventResponse = dataZoneClient.postLineageEvent(postLineageEventRequest);
+    log.info("PostLineageEvent response: {}", postLineageEventResponse);
+  }
+
+  private String getPostLineageEventPayload() {
+//    String namespace = "arn:aws:glue:" + awsSdkConfigParams.getRegion() + ":376060057983";
+    String namespace = awsSdkConfigParams.getDomainIdentifier();
+    String payloadTemplate = "{\n" +
+        "   \"eventTime\":\"2025-01-01T12:00:00.000000Z\",\n" +
+        "   \"producer\":\"https://github.com/OpenLineage/OpenLineage/tree/1.9.1/integration/glue\",\n" +
+        "   \"schemaURL\":\"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunEvent\",\n" +
+        "   \"eventType\":\"COMPLETE\",\n" +
+        "   \"run\": {\n" +
+        "      \"runId\":\"$RUN_ID$\",\n" +
+        "      \"facets\":{\n" +
+        "         \"environment-properties\":{\n" +
+        "            \"_producer\":\"https://github.com/OpenLineage/OpenLineage/tree/1.9.1/integration/spark\",\n" +
+        "            \"_schemaURL\":\"https://openlineage.io/spec/2-0-2/OpenLineage.json#/$defs/RunFacet\",\n" +
+        "            \"environment-properties\":{\n" +
+        "               \"GLUE_VERSION\":\"3.0\",\n" +
+        "               \"GLUE_COMMAND_CRITERIA\":\"glueetl\",\n" +
+        "               \"GLUE_PYTHON_VERSION\":\"3\"\n" +
+        "            }\n" +
+        "         }\n" +
+        "      }\n" +
+        "   },\n" +
+        "   \"job\":{\n" +
+        "      \"namespace\":\"$NAMESPACE$\",\n" +
+        "      \"name\":\"$JOB_NAME$\",\n" +
+        "      \"facets\":{\n" +
+        "         \"jobType\":{\n" +
+        "            \"_producer\":\"https://github.com/OpenLineage/OpenLineage/tree/1.9.1/integration/glue\",\n" +
+        "            \"_schemaURL\":\"https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json#/$defs/JobTypeJobFacet\",\n" +
+        "            \"processingType\":\"BATCH\",\n" +
+        "            \"integration\":\"glue\",\n" +
+        "            \"jobType\":\"JOB\"\n" +
+        "         }\n" +
+        "      }\n" +
+        "   },\n" +
+        "   \"inputs\":[\n" +
+        "      {\n" +
+        "         \"namespace\":\"$NAMESPACE$\",\n" +
+        "         \"name\":\"$INPUT_NAME$\"\n" +
+        "      }\n" +
+        "   ],\n" +
+        "   \"outputs\":[\n" +
+        "      {\n" +
+        "         \"namespace\":\"$NAMESPACE$\",\n" +
+        "         \"name\":\"$OUTPUT_NAME$\",\n" +
+        "         \"facets\":{\n" +
+        "            \"symlinks\":{\n" +
+        "               \"_producer\":\"https://github.com/OpenLineage/OpenLineage/tree/1.9.1/integration/spark\",\n" +
+        "               \"_schemaURL\":\"https://openlineage.io/spec/facets/1-0-0/SymlinksDatasetFacet.json#/$defs/SymlinksDatasetFacet\",\n" +
+        "               \"identifiers\":[\n" +
+        "                  {\n" +
+        "                     \"namespace\":\"$S3_OUTPUT_URI$\",\n" +
+        "                     \"name\":\"$OUTPUT_DBNAME$.$OUTPUT_NAME$\",\n" +
+        "                     \"type\":\"TABLE\"\n" +
+        "                  }\n" +
+        "               ]\n" +
+        "            }\n" +
+        "         }\n" +
+        "      }\n" +
+        "   ]\n" +
+        "}";
+    return payloadTemplate
+            .replace("$RUN_ID$", UUID.randomUUID().toString())
+            .replace("$JOB_NAME$", "TestJob" + UUID.randomUUID())
+            .replace("$NAMESPACE$", namespace)
+            .replace("$INPUT_NAME$", "TestDepartmentAsset")
+            .replace("$OUTPUT_NAME$", "outputtest")
+            .replace("$OUTPUT_DBNAME$", "dg_demo_db3")
+            .replace("$S3_OUTPUT_URI$", "s3://amazon-datazone-376060057983-ap-southeast-2-79874bfdcf98/cdin/outputtest/");
+  }
 }
